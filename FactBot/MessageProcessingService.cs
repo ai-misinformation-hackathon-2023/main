@@ -26,7 +26,6 @@ public class MessageProcessingService
             if (m_MessageProcessingQueue.TryDequeue(out var msg))
             {
                 Console.WriteLine($"Processing message from {msg.Author.Username}#{msg.Author.Discriminator}: {msg.Content}");
-                await msg.Channel.SendMessageAsync("<:quebec:959889754923618344>");
             }
             await Task.Yield();
         }
