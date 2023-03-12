@@ -55,5 +55,6 @@ public class Program
     {
         var message = (msg as SocketUserMessage)!;
         m_MsgProcessor.AcceptMessage(message);
+        await Task.Yield();
     }
 }
