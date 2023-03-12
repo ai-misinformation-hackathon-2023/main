@@ -10,6 +10,7 @@ public class Program
 {
     private DiscordSocketClient m_Client;
     private Secrets m_Secrets;
+    private MessageProcessingService m_MsgProcessor;
 
     public static async Task Main(string[] args)
     {
@@ -40,6 +41,8 @@ public class Program
             await Task.Yield();
         };
 
+        m_MsgProcessor = new MessageProcessingService();
+
         m_Client.MessageReceived += MessageReceived;
 
         await m_Client.LoginAsync(TokenType.Bot, m_Secrets.token);
@@ -51,6 +54,6 @@ public class Program
     private async Task MessageReceived(SocketMessage msg)
     {
         var message = (msg as SocketUserMessage)!;
-        Console.WriteLine($"Received message from {message.Author.Username}: {message.Content}");
+        m_MsgProcessor.AcceptMessage(message);
     }
 }
