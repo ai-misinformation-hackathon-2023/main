@@ -1,10 +1,12 @@
 ﻿using Discord.WebSocket;
 using Newtonsoft.Json;
 using log4net;
+using OpenAI_API;
 
 namespace FactBot;
 
 using Discord;
+using OpenAI_API.Chat;
 
 public class Program
 {
@@ -30,6 +32,10 @@ public class Program
     private async Task ProgramMain()
     {
         m_Secrets = JsonConvert.DeserializeObject<Secrets>(await File.ReadAllTextAsync("secrets.json"));
+        
+        OpenAIAPI openAI = new OpenAIAPI(new APIAuthentication(m_Secrets.openaiKey));
+        
+        
         DiscordSocketConfig socketConfig = new()
         {
             GatewayIntents = GatewayIntents.All
