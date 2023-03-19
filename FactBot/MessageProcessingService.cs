@@ -42,6 +42,11 @@ public class MessageProcessingService
                             await msg.DeleteAsync();
                         });
                     }
+                    else if (result is GPTResponse.Timeout)
+                    {
+                        Console.WriteLine("Timeout occurred");
+                        m_MessageProcessingQueue.Enqueue(msg);
+                    }
                 });
             }
             await Task.Yield();

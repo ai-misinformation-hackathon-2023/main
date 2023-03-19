@@ -22,7 +22,7 @@ public class GPTServiceManager : IGPTService
     {
         GPTResponse response = await m_InputValidationService.GetResponse(message);
         Console.WriteLine($"Input validation response: {response}");
-        if (response is GPTResponse.No or GPTResponse.Invalid)
+        if (response is GPTResponse.No or GPTResponse.Invalid or GPTResponse.Timeout)
             return response;
 
         response = await m_MisinfoService.GetResponse(message);
@@ -42,7 +42,8 @@ public enum GPTResponse : int
     Yes,
     No,
     Maybe,
-    Invalid
+    Invalid,
+    Timeout
 }
 
 public interface IGPTService
@@ -114,13 +115,18 @@ You then MUST give a reason for your response. The reason MUST be a single sente
         
         messages.Add(new ChatMessage(ChatMessageRole.User, message));
 
-        ChatResult result = await m_OpenAI.Chat.CreateChatCompletionAsync(new ChatRequest()
+        Task<ChatResult> resultTask = m_OpenAI.Chat.CreateChatCompletionAsync(new ChatRequest()
         {
             Model = Model.ChatGPTTurbo,
             Temperature = 0.2,
             MaxTokens = 2000,
             Messages = messages
         });
+        if (await Task.WhenAny(resultTask, Task.Delay(TimeSpan.FromSeconds(10))) != resultTask)
+        {
+            return GPTResponse.Timeout;
+        }
+        ChatResult result = resultTask.Result;
         string resultString = result.ToString();
         
         messages.Add(new ChatMessage(ChatMessageRole.Assistant, resultString));
@@ -225,13 +231,18 @@ Here are some sample inputs and their expected outputs:
         
         messages.Add(new ChatMessage(ChatMessageRole.User, PROMPT + ":\n" + message));
 
-        ChatResult result = await m_OpenAI.Chat.CreateChatCompletionAsync(new ChatRequest()
+        Task<ChatResult> resultTask = m_OpenAI.Chat.CreateChatCompletionAsync(new ChatRequest()
         {
             Model = Model.ChatGPTTurbo,
             Temperature = 0.5,
             MaxTokens = 2000,
             Messages = messages
         });
+        if (await Task.WhenAny(resultTask, Task.Delay(TimeSpan.FromSeconds(10))) != resultTask)
+        {
+            return GPTResponse.Timeout;
+        }
+        ChatResult result = await resultTask;
         string resultString = result.ToString();
         
         messages.Add(new ChatMessage(ChatMessageRole.Assistant, resultString));
