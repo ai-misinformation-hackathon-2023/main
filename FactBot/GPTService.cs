@@ -69,7 +69,7 @@ You then MUST give a reason for your response. The reason MUST be a single sente
 """;
     private List<ChatMessage> m_Messages = new List<ChatMessage>();
     
-    private const string SHORT_PROMPT = "Is the sentence grammtically correct without considering the meaning : ";
+    private const string SHORT_PROMPT = "Is the sentence grammtically correct without considering the meaning (YES for grammatical, INVALID for ungrammatical, NO for harmful, MAYBE for unsure): ";
     
     private string Preprocess(string message)
     {
