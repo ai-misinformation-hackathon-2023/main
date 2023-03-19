@@ -1,4 +1,5 @@
-﻿using Discord.WebSocket;
+﻿using System.Diagnostics;
+using Discord.WebSocket;
 using Newtonsoft.Json;
 using log4net;
 using OpenAI_API;
@@ -13,6 +14,7 @@ public class Program
     private DiscordSocketClient m_Client;
     private Secrets m_Secrets;
     private MessageProcessingService m_MsgProcessor;
+    private GPTService m_GPTService;
 
     public static async Task Main(string[] args)
     {
@@ -32,9 +34,8 @@ public class Program
     private async Task ProgramMain()
     {
         m_Secrets = JsonConvert.DeserializeObject<Secrets>(await File.ReadAllTextAsync("secrets.json"));
-        
-        OpenAIAPI openAI = new OpenAIAPI(new APIAuthentication(m_Secrets.openaiKey));
-        
+        m_GPTService = new GPTService(m_Secrets.openaiKey);
+        await m_GPTService.Initialize();
         
         DiscordSocketConfig socketConfig = new()
         {

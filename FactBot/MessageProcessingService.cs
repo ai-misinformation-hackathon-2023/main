@@ -23,9 +23,14 @@ public class MessageProcessingService
     {
         while (true)
         {
-            if (m_MessageProcessingQueue.TryDequeue(out var msg))
+            if (m_MessageProcessingQueue.TryDequeue(out SocketUserMessage? msg))
             {
+                if (msg.Author.IsBot)
+                    continue;
                 Console.WriteLine($"Processing message from {msg.Author.Username}#{msg.Author.Discriminator}: {msg.Content}");
+                string result = await GPTService.instance.GetResponse(msg.Content);
+                Console.WriteLine($"Response: {result}");
+                await msg.Channel.SendMessageAsync(result);
             }
             await Task.Yield();
         }
