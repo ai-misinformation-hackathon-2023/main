@@ -33,7 +33,7 @@ public class MessageProcessingService
                     Console.WriteLine($"Processing message from {msg.Author.Username}#{msg.Author.Discriminator}: {msg.Content}");
                     (GPTResponse result, string message) = await GPTServiceManager.s_Instance!.GetResponse(msg.Content);
                     Console.WriteLine($"Response: {result}, {message}");
-                    if (result is GPTResponse.No)
+                    if (result is GPTResponse.Failed)
                     {
                         await msg.ReplyAsync($"Misinformation detected!\nResponse from the bot: {message}");
                         await Task.Run(async () =>

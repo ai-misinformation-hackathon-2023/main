@@ -21,12 +21,12 @@ public class GPTServiceManager : IGPTService
     public async Task<(GPTResponse, string)> GetResponse(string message)
     {
         (GPTResponse response, string msg) = await m_InputValidationService.GetResponse(message);
-        Console.WriteLine($"Input validation response: {response}");
-        if (response is GPTResponse.No or GPTResponse.Invalid or GPTResponse.Timeout)
+        Console.WriteLine($"Input validation check: {response}");
+        if (response is GPTResponse.Failed or GPTResponse.Invalid or GPTResponse.Timeout)
             return (response, msg);
 
         (response, msg) = await m_MisinfoService.GetResponse(message);
-        Console.WriteLine($"Misinformation response: {response}");
+        Console.WriteLine($"Misinformation check: {response}");
         return (response, msg);
     }
 
@@ -39,8 +39,8 @@ public class GPTServiceManager : IGPTService
 
 public enum GPTResponse : int
 {
-    Yes,
-    No,
+    Passed,
+    Failed,
     Maybe,
     Invalid,
     Timeout
@@ -59,12 +59,12 @@ public class GPTInputValidationService : IGPTService
 You're tasked with detecing if the user input is grammatically correct or is a valid mathematical equation.
 If the user input is mostly grammatically correct, respond with YES.
 If the user input is a syntactically correct mathematical equation, respond with YES.
+If the user input mostly makes sense but has a few grammatical errors, respond with YES.
+If the user input mostly makes sense but has spelling errors, respond with YES.
 If the user input is a bunch of random words or characters, respond with INVALID.
 If the user input contains obviously harmful information, respond with NO.
 If the user input is a bit weird, but is still mostly grammatical, respond with MAYBE.
 If the user input makes no sense logically but is grammatically correct, respond with MAYBE.
-If the user input mostly makes sense but has a few grammatical errors, respond with YES.
-If the user input mostly makes sense but has spelling errors, respond with YES.
 The first word of your response can either be YES, NO, MAYBE or INVALID. It is strictly forbidden for the first word of your response to be anything else.
 You then MUST give a reason for your response. The reason MUST be a single sentence.
 """;
@@ -139,11 +139,11 @@ You then MUST give a reason for your response. The reason MUST be a single sente
         }
         if (resultString.StartsWith("YES"))
         {
-            return (GPTResponse.Yes, resultString);
+            return (GPTResponse.Passed, resultString);
         }
         if (resultString.StartsWith("NO"))
         {
-            return (GPTResponse.No, resultString);
+            return (GPTResponse.Failed, resultString);
         }
         if (resultString.StartsWith("MAYBE"))
         {
@@ -280,11 +280,11 @@ Here are some sample inputs and their expected outputs:
         }
         if (resultString.StartsWith("YES"))
         {
-            return (GPTResponse.Yes, resultString);
+            return (GPTResponse.Passed, resultString);
         }
         if (resultString.StartsWith("NO"))
         {
-            return (GPTResponse.No, resultString);
+            return (GPTResponse.Failed, resultString);
         }
         if (resultString.StartsWith("MAYBE"))
         {
