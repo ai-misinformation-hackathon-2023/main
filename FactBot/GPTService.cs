@@ -122,7 +122,7 @@ You then MUST give a reason for your response. The reason MUST be a single sente
             MaxTokens = 2000,
             Messages = messages
         });
-        if (await Task.WhenAny(resultTask, Task.Delay(TimeSpan.FromSeconds(10))) != resultTask)
+        if (await Task.WhenAny(resultTask, Task.Delay(TimeSpan.FromSeconds(20))) != resultTask)
         {
             return GPTResponse.Timeout;
         }
@@ -157,7 +157,8 @@ You then MUST give a reason for your response. The reason MUST be a single sente
 
     public async Task Initialize()
     {
-        ChatResult result = await m_OpenAI.Chat.CreateChatCompletionAsync(new ChatRequest()
+        BEGIN:
+        Task<ChatResult> resultTask = m_OpenAI.Chat.CreateChatCompletionAsync(new ChatRequest()
         {
             Model = Model.ChatGPTTurbo,
             Temperature = 0.5,
@@ -167,6 +168,12 @@ You then MUST give a reason for your response. The reason MUST be a single sente
                 new ChatMessage(ChatMessageRole.System, PROMPT)
             }
         });
+        if (await Task.WhenAny(resultTask, Task.Delay(TimeSpan.FromSeconds(60))) != resultTask)
+        {
+            Console.WriteLine("Timeout");
+            goto BEGIN;
+        }
+        ChatResult result = resultTask.Result;
         Console.WriteLine(result.ToString());
     }
 }
@@ -206,7 +213,8 @@ Here are some sample inputs and their expected outputs:
     
     public async Task Initialize()
     {
-        ChatResult result = await m_OpenAI.Chat.CreateChatCompletionAsync(new ChatRequest()
+        BEGIN:
+        Task<ChatResult> resultTask = m_OpenAI.Chat.CreateChatCompletionAsync(new ChatRequest()
         {
             Model = Model.ChatGPTTurbo,
             Temperature = 0.8,
@@ -216,6 +224,13 @@ Here are some sample inputs and their expected outputs:
                 new ChatMessage(ChatMessageRole.System, PROMPT)
             }
         });
+        
+        if (await Task.WhenAny(resultTask, Task.Delay(TimeSpan.FromSeconds(60))) != resultTask)
+        {
+            Console.WriteLine("Timeout");
+            goto BEGIN;
+        }
+        ChatResult result = resultTask.Result;
         Console.WriteLine(result.ToString());
     }
     
@@ -238,7 +253,7 @@ Here are some sample inputs and their expected outputs:
             MaxTokens = 2000,
             Messages = messages
         });
-        if (await Task.WhenAny(resultTask, Task.Delay(TimeSpan.FromSeconds(10))) != resultTask)
+        if (await Task.WhenAny(resultTask, Task.Delay(TimeSpan.FromSeconds(20))) != resultTask)
         {
             return GPTResponse.Timeout;
         }
