@@ -26,7 +26,7 @@ public class GPTServiceManager : IGPTService
             return (response, msg);
 
         (response, msg) = await m_MisinfoService.GetResponse(message);
-        Console.WriteLine($"Misinfo response: {response}");
+        Console.WriteLine($"Misinformation response: {response}");
         return (response, msg);
     }
 
@@ -56,9 +56,10 @@ public class GPTInputValidationService : IGPTService
 {
     private OpenAIAPI m_OpenAI;
     private const string PROMPT = """
-You're tasked with detecing if the user input is grammatically correct.
-If the user input is mostly grammatical, respond with YES.
-If the user input is a bunch of random words, respond with INVALID.
+You're tasked with detecing if the user input is grammatically correct or is a valid mathematical equation.
+If the user input is mostly grammatically correct, respond with YES.
+If the user input is a syntactically correct mathematical equation, respond with YES.
+If the user input is a bunch of random words or characters, respond with INVALID.
 If the user input contains obviously harmful information, respond with NO.
 If the user input is a bit weird, but is still mostly grammatical, respond with MAYBE.
 If the user input makes no sense logically but is grammatically correct, respond with MAYBE.
@@ -95,9 +96,9 @@ You then MUST give a reason for your response. The reason MUST be a single sente
             new ChatMessage(ChatMessageRole.User, Preprocess("Do yes hello hear yes me that i am is hey want go school home work")),
             new ChatMessage(ChatMessageRole.Assistant, "INVALID. It's a bunch of random words."),
             new ChatMessage(ChatMessageRole.User, Preprocess("1 + 1 = 3")),
-            new ChatMessage(ChatMessageRole.Assistant, "YES. The syntax correct."),
+            new ChatMessage(ChatMessageRole.Assistant, "YES. The syntax is correct."),
             new ChatMessage(ChatMessageRole.User, Preprocess("1 + 1 = 2")),
-            new ChatMessage(ChatMessageRole.Assistant, "YES. The syntax correct."),
+            new ChatMessage(ChatMessageRole.Assistant, "YES. The syntax is correct."),
             new ChatMessage(ChatMessageRole.User, Preprocess("The quick brown fox jumps over the lazy dog")),
             new ChatMessage(ChatMessageRole.Assistant, "YES. The sentence is grammatically correct."),
             new ChatMessage(ChatMessageRole.User, Preprocess("Pfizer manufactured the COVID virus.")),
@@ -187,10 +188,11 @@ public class GPTMisinformationCheckService : IGPTService
     private const string PROMPT = """
 You're tasked with finding misinformation in the user input. The first word of your response can either be YES, NO or MAYBE.
 It is strictly forbidden for the first word of your response to be anything else.
+It is strictly forbidden to detect any correct mathematical formulas or equations as misinformation.
 You then MUST give a reason for your response. The reason MUST be a single sentence.
 Here are some sample inputs and their expected outputs:
 """;
-    private const string SHORT_PROMPT = "YES for misinformation, NO for not misinformation, MAYBE for unsure:";
+    private const string SHORT_PROMPT = "YES for misinformation, NO for not misinformation, MAYBE for unsure.";
     
     private string Preprocess(string message)
     {
@@ -212,6 +214,10 @@ Here are some sample inputs and their expected outputs:
                 new ChatMessage(ChatMessageRole.Assistant, "NO"),
                 new ChatMessage(ChatMessageRole.User, Preprocess("The earth is round")),
                 new ChatMessage(ChatMessageRole.Assistant, "YES"),
+                new ChatMessage(ChatMessageRole.User, Preprocess("1 + 1 = 2")),
+                new ChatMessage(ChatMessageRole.Assistant, "YES"),
+                new ChatMessage(ChatMessageRole.User, Preprocess("1 + 1 = 3")),
+                new ChatMessage(ChatMessageRole.Assistant, "NO"),
             }
         );
         s_Instance = this;
