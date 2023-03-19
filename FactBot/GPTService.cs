@@ -55,16 +55,29 @@ Here are some sample inputs and their expected outputs:
     
     public async Task<string> GetResponse(string message)
     {
-        m_Messages.Add(new ChatMessage(ChatMessageRole.User, message));
+        List<ChatMessage> messages;
+        lock (m_Messages)
+        {
+            messages = new List<ChatMessage>(m_Messages);
+        }
+        
+        messages.Add(new ChatMessage(ChatMessageRole.User, message));
+
         ChatResult result = await m_OpenAI.Chat.CreateChatCompletionAsync(new ChatRequest()
         {
             Model = Model.ChatGPTTurbo,
             Temperature = 0.5,
             MaxTokens = 2000,
-            Messages = m_Messages
+            Messages = messages
         });
         string resultString = result.ToString();
-        m_Messages.Add(new ChatMessage(ChatMessageRole.Assistant, resultString));
+        
+        messages.Add(new ChatMessage(ChatMessageRole.Assistant, resultString));
+        lock (m_Messages)
+        { 
+            m_Messages.Add(messages[^2]);
+            m_Messages.Add(messages[^1]);
+        }
         return resultString;
     }
 }
