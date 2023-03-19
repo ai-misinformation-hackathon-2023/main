@@ -44,7 +44,7 @@ public class MessageProcessingService
                     }
                     else if (result is GPTResponse.Timeout)
                     {
-                        Console.WriteLine("Timeout occurred");
+                        Console.WriteLine("Timeout occurred.");
                         m_MessageProcessingQueue.Enqueue(msg);
                     }
                 });

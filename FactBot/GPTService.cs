@@ -189,6 +189,7 @@ public class GPTMisinformationCheckService : IGPTService
 You're tasked with finding misinformation in the user input. The first word of your response can either be YES, NO or MAYBE.
 It is strictly forbidden for the first word of your response to be anything else.
 It is strictly forbidden to detect any correct mathematical formulas or equations as misinformation.
+It is strictly forbidden to detect any opinionated statements as misinformation.
 You then MUST give a reason for your response. The reason MUST be a single sentence.
 Here are some sample inputs and their expected outputs:
 """;
@@ -218,6 +219,10 @@ Here are some sample inputs and their expected outputs:
                 new ChatMessage(ChatMessageRole.Assistant, "YES"),
                 new ChatMessage(ChatMessageRole.User, Preprocess("1 + 1 = 3")),
                 new ChatMessage(ChatMessageRole.Assistant, "NO"),
+                new ChatMessage(ChatMessageRole.User, Preprocess("red is a color")),
+                new ChatMessage(ChatMessageRole.Assistant, "YES"),
+                new ChatMessage(ChatMessageRole.User, Preprocess("red is the best color")),
+                new ChatMessage(ChatMessageRole.Assistant, "MAYBE"),
             }
         );
         s_Instance = this;
