@@ -31,9 +31,17 @@ public class MessageProcessingService
                 Task t = Task.Run(async () =>
                 {
                     Console.WriteLine($"Processing message from {msg.Author.Username}#{msg.Author.Discriminator}: {msg.Content}");
-                    string result = await GPTService.instance.GetResponse(msg.Content);
+                    GPTResponse result = await GPTServiceManager.s_Instance!.GetResponse(msg.Content);
                     Console.WriteLine($"Response: {result}");
-                    await msg.ReplyAsync(result);
+                    if (result is GPTResponse.No)
+                    {
+                        await msg.ReplyAsync("Misinformation detected!");
+                        await Task.Run(async () =>
+                        {
+                            await Task.Delay(5000);
+                            await msg.DeleteAsync();
+                        });
+                    }
                 });
             }
             await Task.Yield();

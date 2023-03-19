@@ -14,7 +14,7 @@ public class Program
     private DiscordSocketClient m_Client;
     private Secrets m_Secrets;
     private MessageProcessingService m_MsgProcessor;
-    private GPTService m_GPTService;
+    private GPTServiceManager m_ServiceManager;
 
     public static async Task Main(string[] args)
     {
@@ -34,8 +34,10 @@ public class Program
     private async Task ProgramMain()
     {
         m_Secrets = JsonConvert.DeserializeObject<Secrets>(await File.ReadAllTextAsync("secrets.json"));
-        m_GPTService = new GPTService(m_Secrets.openaiKey);
-        await m_GPTService.Initialize();
+        OpenAIAPI api = new OpenAIAPI(m_Secrets.openaiKey);
+        m_ServiceManager = new GPTServiceManager(api);
+        await m_ServiceManager.Initialize();
+        
         
         DiscordSocketConfig socketConfig = new()
         {
