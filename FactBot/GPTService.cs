@@ -18,16 +18,16 @@ public class GPTServiceManager : IGPTService
         s_Instance = this;
     }
 
-    public async Task<GPTResponse> GetResponse(string message)
+    public async Task<(GPTResponse, string)> GetResponse(string message)
     {
-        GPTResponse response = await m_InputValidationService.GetResponse(message);
+        (GPTResponse response, string msg) = await m_InputValidationService.GetResponse(message);
         Console.WriteLine($"Input validation response: {response}");
         if (response is GPTResponse.No or GPTResponse.Invalid or GPTResponse.Timeout)
-            return response;
+            return (response, msg);
 
-        response = await m_MisinfoService.GetResponse(message);
+        (response, msg) = await m_MisinfoService.GetResponse(message);
         Console.WriteLine($"Misinfo response: {response}");
-        return response;
+        return (response, msg);
     }
 
     public async Task Initialize()
@@ -48,7 +48,7 @@ public enum GPTResponse : int
 
 public interface IGPTService
 {
-    Task<GPTResponse> GetResponse(string message);
+    Task<(GPTResponse, string)> GetResponse(string message);
     Task Initialize();
 }
 
@@ -105,7 +105,7 @@ You then MUST give a reason for your response. The reason MUST be a single sente
         };
     }
 
-    public async Task<GPTResponse> GetResponse(string message)
+    public async Task<(GPTResponse, string)> GetResponse(string message)
     {
         List<ChatMessage> messages;
         lock (m_Messages)
@@ -124,7 +124,7 @@ You then MUST give a reason for your response. The reason MUST be a single sente
         });
         if (await Task.WhenAny(resultTask, Task.Delay(TimeSpan.FromSeconds(20))) != resultTask)
         {
-            return GPTResponse.Timeout;
+            return (GPTResponse.Timeout, "");
         }
         ChatResult result = resultTask.Result;
         string resultString = result.ToString();
@@ -138,21 +138,21 @@ You then MUST give a reason for your response. The reason MUST be a single sente
         }
         if (resultString.StartsWith("YES"))
         {
-            return GPTResponse.Yes;
+            return (GPTResponse.Yes, resultString);
         }
         if (resultString.StartsWith("NO"))
         {
-            return GPTResponse.No;
+            return (GPTResponse.No, resultString);
         }
         if (resultString.StartsWith("MAYBE"))
         {
-            return GPTResponse.Maybe;
+            return (GPTResponse.Maybe, resultString);
         }
         if (resultString.StartsWith("INVALID"))
         {
-            return GPTResponse.Invalid;
+            return (GPTResponse.Invalid, resultString);
         }
-        return GPTResponse.Invalid;
+        return (GPTResponse.Invalid, resultString);
     }
 
     public async Task Initialize()
@@ -236,7 +236,7 @@ Here are some sample inputs and their expected outputs:
     
     public static GPTMisinformationCheckService instance => s_Instance ?? throw new Exception("GPTService not initialized");
     
-    public async Task<GPTResponse> GetResponse(string message)
+    public async Task<(GPTResponse, string)> GetResponse(string message)
     {
         List<ChatMessage> messages;
         lock (m_Messages)
@@ -255,7 +255,7 @@ Here are some sample inputs and their expected outputs:
         });
         if (await Task.WhenAny(resultTask, Task.Delay(TimeSpan.FromSeconds(20))) != resultTask)
         {
-            return GPTResponse.Timeout;
+            return (GPTResponse.Timeout, "");
         }
         ChatResult result = await resultTask;
         string resultString = result.ToString();
@@ -268,16 +268,16 @@ Here are some sample inputs and their expected outputs:
         }
         if (resultString.StartsWith("YES"))
         {
-            return GPTResponse.Yes;
+            return (GPTResponse.Yes, resultString);
         }
         if (resultString.StartsWith("NO"))
         {
-            return GPTResponse.No;
+            return (GPTResponse.No, resultString);
         }
         if (resultString.StartsWith("MAYBE"))
         {
-            return GPTResponse.Maybe;
+            return (GPTResponse.Maybe, resultString);
         }
-        return GPTResponse.Invalid;
+        return (GPTResponse.Invalid, resultString);
     }
 }
