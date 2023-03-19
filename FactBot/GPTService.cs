@@ -190,6 +190,12 @@ It is strictly forbidden for the first word of your response to be anything else
 You then MUST give a reason for your response. The reason MUST be a single sentence.
 Here are some sample inputs and their expected outputs:
 """;
+    private const string SHORT_PROMPT = "YES for misinformation, NO for not misinformation, MAYBE for unsure:";
+    
+    private string Preprocess(string message)
+    {
+        return SHORT_PROMPT + message;
+    }
     
     public GPTMisinformationCheckService(OpenAIAPI api)
     {
@@ -198,13 +204,13 @@ Here are some sample inputs and their expected outputs:
             new[]
             {
                 new ChatMessage(ChatMessageRole.System, PROMPT),
-                new ChatMessage(ChatMessageRole.User, "Covid 19 is a hoax"),
+                new ChatMessage(ChatMessageRole.User, Preprocess("Covid 19 is a hoax")),
                 new ChatMessage(ChatMessageRole.Assistant, "NO"),
-                new ChatMessage(ChatMessageRole.User, "The earth is flat"),
+                new ChatMessage(ChatMessageRole.User, Preprocess("The earth is flat")),
                 new ChatMessage(ChatMessageRole.Assistant, "NO"),
-                new ChatMessage(ChatMessageRole.User, "The moon landing was faked"),
+                new ChatMessage(ChatMessageRole.User, Preprocess("The moon landing was faked")),
                 new ChatMessage(ChatMessageRole.Assistant, "NO"),
-                new ChatMessage(ChatMessageRole.User, "The earth is round"),
+                new ChatMessage(ChatMessageRole.User, Preprocess("The earth is round")),
                 new ChatMessage(ChatMessageRole.Assistant, "YES"),
             }
         );
