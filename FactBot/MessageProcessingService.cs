@@ -46,12 +46,12 @@ public class MessageProcessingService
                     Console.WriteLine($"Processing message from {msg.Author.Username}#{msg.Author.Discriminator}: {msg.Content}");
                     (GPTResponse result, string message) = await GPTServiceManager.s_Instance!.TryGetResponse(msg.Content);
                     Console.WriteLine($"Response: {result}, {message}");
-                    if (result is GPTResponse.Failed)
+                    if (result is GPTResponse.Harmful or GPTResponse.ContainsMisinformation)
                     {
                         await msg.ReplyAsync($"Misinformation detected!\nResponse from the bot: {message}");
                         await Task.Run(async () =>
                         {
-                            await Task.Delay(5000);
+                            await Task.Yield();
                             await msg.DeleteAsync();
                         });
                     }

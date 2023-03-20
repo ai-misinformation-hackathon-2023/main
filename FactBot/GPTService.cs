@@ -69,7 +69,7 @@ public class GPTServiceManager : IGPTService
     {
         (GPTResponse response, string msg) = await m_InputValidationService.GetResponse(message);
         Console.WriteLine($"Input validation check: {response}");
-        if (response is GPTResponse.Failed or GPTResponse.Invalid or GPTResponse.Timeout)
+        if (response is GPTResponse.Ungrammatical or GPTResponse.Timeout)
             return (response, msg);
 
         (response, msg) = await m_MisinfoService.GetResponse(message);
@@ -138,20 +138,20 @@ public class GPTInputValidationService : IGPTService
     private OpenAIAPI m_OpenAI;
     private const string PROMPT = """
 You're tasked with detecing if the user input is grammatically correct or is a valid mathematical equation.
-If the user input is mostly grammatically correct, respond with YES.
-If the user input is a syntactically correct mathematical equation, respond with YES.
-If the user input mostly makes sense but has a few grammatical errors, respond with YES.
-If the user input mostly makes sense but has spelling errors, respond with YES.
-If the user input is a bunch of random words or characters, respond with INVALID.
-If the user input contains obviously harmful information, respond with NO.
-If the user input is a bit weird, but is still mostly grammatical, respond with MAYBE.
-If the user input makes no sense logically but is grammatically correct, respond with MAYBE.
-The first word of your response can either be YES, NO, MAYBE or INVALID. It is strictly forbidden for the first word of your response to be anything else.
-You then MUST give a reason for your response. The reason MUST be a single sentence.
+If the user input is mostly grammatically correct, respond with GRAMMATICAL.
+If the user input is a syntactically correct mathematical equation, respond with GRAMMATICAL.
+If the user input mostly makes sense but has a few grammatical errors, respond with GRAMMATICAL.
+If the user input mostly makes sense but has spelling errors, respond with GRAMMATICAL.
+If the user input is a bunch of random words or characters, respond with UNGRAMMATICAL.
+If the user input contains obviously harmful information, respond with HARMFUL.
+If the user input is a bit weird, but is still mostly grammatical, respond with UNSURE.
+If the user input makes no sense logically but is grammatically correct, respond with UNSURE.
+The first word of your response can either be GRAMMATICAL, UNGRAMMATICAL, HARMFUL or UNSURE. It is strictly forbidden for the first word of your response to be anything else.
+You MUST then give a reason for your response. The reason MUST be a single sentence.
 """;
     private List<ChatMessage> m_Messages = new List<ChatMessage>();
     
-    private const string SHORT_PROMPT = "Is the sentence grammtically correct WITHOUT considering the meaning (YES for grammatical, INVALID for ungrammatical (without considering the correctness of the content), NO for harmful, MAYBE for unsure): ";
+    private const string SHORT_PROMPT = "Is the sentence grammtically correct WITHOUT considering the meaning (GRAMMATICAL, UNGRAMMATICAL, HARMFUL or UNSURE): ";
     
     private string Preprocess(string message)
     {
@@ -194,23 +194,23 @@ You then MUST give a reason for your response. The reason MUST be a single sente
             m_Messages.Add(messages[^2]);
             m_Messages.Add(messages[^1]);
         }
-        if (resultString.StartsWith("YES"))
+        if (resultString.ToUpper().StartsWith(GPTResponse.Grammatical.ToString().ToUpper()))
         {
-            return (GPTResponse.Passed, resultString);
+            return (GPTResponse.Grammatical, resultString);
         }
-        if (resultString.StartsWith("NO"))
+        if (resultString.ToUpper().StartsWith(GPTResponse.Ungrammatical.ToString().ToUpper()))
         {
-            return (GPTResponse.Failed, resultString);
+            return (GPTResponse.Ungrammatical, resultString);
         }
-        if (resultString.StartsWith("MAYBE"))
+        if (resultString.ToUpper().StartsWith(GPTResponse.Harmful.ToString().ToUpper()))
         {
-            return (GPTResponse.Maybe, resultString);
+            return (GPTResponse.Harmful, resultString);
         }
-        if (resultString.StartsWith("INVALID"))
+        if (resultString.ToUpper().StartsWith(GPTResponse.Unsure.ToString().ToUpper()))
         {
-            return (GPTResponse.Invalid, resultString);
+            return (GPTResponse.Unsure, resultString);
         }
-        return (GPTResponse.Invalid, resultString);
+        return (GPTResponse.Unsure, resultString);
     }
 
     public async Task Initialize()
