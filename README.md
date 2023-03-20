@@ -1,6 +1,6 @@
 # FactBot
 
-FactBot is a discord bot that detects messages that contain misinformation and delete them. 
+FactBot is a discord bot that detects messages that contain misinformation and deletes them. 
 
 ## Table of Contents
 
