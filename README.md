@@ -39,6 +39,10 @@ Classifying messages in the server into four categories: `grammatical` , `ungram
 `harmful`: The message contains obviously harmful information, for example, "vaccines are harmful".  
 `unsure`: The message cannot be confidently put into any of the above three categories.  
 
+If a message is `harmful`, the bot would treat it as misinformation right away without going through the second layer.  
+If a message is `ungrammatical`, it would not go through the second layer either, as that will only be a waste of resources.  
+If a message is `grammatical` or `unsure`, it is passed to the second layer.
+
 ### Layer 2
 Classifying messages in the server into four categories: `contains misinformation` , `does not contain misinformation` , `contains opinion`, and `unsure`.
 
@@ -46,10 +50,6 @@ Classifying messages in the server into four categories: `contains misinformatio
 `does not contain misinformation`: The message does not contain misinformation.  
 `contains opinion`: The message is purely a matter of subjective opinion, and therefore cannot be classified as factually correct or wrong.  
 `unsure`: The message cannot be confidently put into any of the above three categories.  
-
-If a message is `harmful`, the bot would treat it as misinformation right away without going through the second layer.  
-If a message is `ungrammatical`, it would not go through the second layer either, as that will only be a waste of resources.  
-If a message is `grammatical` or `unsure`, it is passed to the second layer.
 
 ### Action
 The bot deletes the messages that are classified as `harmful` or `contains misinformation`, and posts a response with explanation about why the message was deleted.
