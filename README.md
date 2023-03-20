@@ -52,7 +52,7 @@ If a message is `ungrammatical`, it would not go through the second layer either
 If a message is `grammatical` or `unsure`, it is passed to the second layer.
 
 ### Action
-The bot deletes the messages that are classified as `harmful` or `contains misinformation`, and logs the information.
+The bot deletes the messages that are classified as `harmful` or `contains misinformation`, and posts a response with explanation about why the message was deleted.
 
 ## Effectiveness
 
