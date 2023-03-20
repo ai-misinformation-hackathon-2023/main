@@ -69,7 +69,7 @@ public class GPTServiceManager : IGPTService
     {
         (GPTResponse response, string msg) = await m_InputValidationService.GetResponse(message);
         Console.WriteLine($"Input validation check: {response}");
-        if (response is GPTResponse.Ungrammatical or GPTResponse.Timeout)
+        if (response is GPTResponse.Ungrammatical or GPTResponse.Timeout or GPTResponse.Harmful)
             return (response, msg);
 
         (response, msg) = await m_MisinfoService.GetResponse(message);
