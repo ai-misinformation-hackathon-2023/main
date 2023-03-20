@@ -31,7 +31,7 @@ public class MessageProcessingService
                 Task t = Task.Run(async () =>
                 {
                     Console.WriteLine($"Processing message from {msg.Author.Username}#{msg.Author.Discriminator}: {msg.Content}");
-                    (GPTResponse result, string message) = await GPTServiceManager.s_Instance!.GetResponse(msg.Content);
+                    (GPTResponse result, string message) = await GPTServiceManager.s_Instance!.TryGetResponse(msg.Content);
                     Console.WriteLine($"Response: {result}, {message}");
                     if (result is GPTResponse.Failed)
                     {

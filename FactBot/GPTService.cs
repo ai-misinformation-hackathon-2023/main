@@ -10,12 +10,60 @@ public class GPTServiceManager : IGPTService
     private readonly GPTInputValidationService m_InputValidationService;
     private readonly GPTMisinformationCheckService m_MisinfoService;
     public static GPTServiceManager? s_Instance { get; private set; }
+    private object m_Mutex = new object();
+    private volatile bool m_ResetInProgress = false;
+    private object m_ResetInProgressMutex = new object();
+    
+    
+    private volatile int m_GetResponseCallCount = 0;
+    private object m_GetResponseCallCountMutex = new object();
 
     public GPTServiceManager(OpenAIAPI api)
     {
         m_MisinfoService = new GPTMisinformationCheckService(api);
         m_InputValidationService = new GPTInputValidationService(api);
         s_Instance = this;
+    }
+
+    public async Task<(GPTResponse, string)> TryGetResponse(string message)
+    {
+        try
+        {
+            Monitor.Enter(m_ResetInProgressMutex);
+            if (m_ResetInProgress)
+                return (GPTResponse.Timeout, "Timeout occurred.");
+
+            try
+            {
+                Monitor.Enter(m_GetResponseCallCountMutex);
+                Interlocked.Increment(ref m_GetResponseCallCount);
+            }
+            finally
+            {
+                Monitor.Exit(m_GetResponseCallCountMutex);
+            }
+        }
+        finally
+        {
+            Monitor.Exit(m_ResetInProgressMutex);
+        }
+
+        try
+        {
+            return await m_InputValidationService.GetResponse(message);
+        }
+        finally
+        {
+            try
+            {
+                Monitor.Enter(m_GetResponseCallCountMutex);
+                Interlocked.Decrement(ref m_GetResponseCallCount);
+            }
+            finally
+            {
+                Monitor.Exit(m_GetResponseCallCountMutex);
+            }
+        }
     }
 
     public async Task<(GPTResponse, string)> GetResponse(string message)
@@ -35,6 +83,48 @@ public class GPTServiceManager : IGPTService
         await m_InputValidationService.Initialize();
         await m_MisinfoService.Initialize();
     }
+
+    public async Task Reset()
+    {
+        try
+        {
+            Monitor.Enter(m_Mutex);
+            try
+            {
+                Monitor.Enter(m_ResetInProgressMutex);
+                if (m_ResetInProgress)
+                {
+                    return;
+                }
+                m_ResetInProgress = true;
+            }
+            finally
+            {
+                Monitor.Exit(m_ResetInProgress);
+            }
+            
+            while (true)
+            {
+                try
+                {
+                    Monitor.Enter(m_GetResponseCallCountMutex);
+                    if (m_GetResponseCallCount == 0)
+                        break;
+                }
+                finally
+                {
+                    Monitor.Exit(m_GetResponseCallCountMutex);
+                }
+                await Task.Yield();
+            }
+            await m_InputValidationService.Reset();
+            await m_MisinfoService.Reset();
+        }
+        finally
+        {
+            Monitor.Exit(m_Mutex);
+        }
+    }
 }
 
 public enum GPTResponse : int
@@ -50,6 +140,7 @@ public interface IGPTService
 {
     Task<(GPTResponse, string)> GetResponse(string message);
     Task Initialize();
+    Task Reset();
 }
 
 public class GPTInputValidationService : IGPTService
@@ -177,6 +268,11 @@ You then MUST give a reason for your response. The reason MUST be a single sente
         ChatResult result = resultTask.Result;
         Console.WriteLine(result.ToString());
     }
+
+    public async Task Reset()
+    {
+        
+    }
 }
 
 public class GPTMisinformationCheckService : IGPTService
@@ -250,7 +346,12 @@ Here are some sample inputs and their expected outputs:
         ChatResult result = resultTask.Result;
         Console.WriteLine(result.ToString());
     }
-    
+
+    public async Task Reset()
+    {
+        
+    }
+
     public static GPTMisinformationCheckService instance => s_Instance ?? throw new Exception("GPTService not initialized");
     
     public async Task<(GPTResponse, string)> GetResponse(string message)
