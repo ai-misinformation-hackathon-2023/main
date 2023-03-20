@@ -35,7 +35,7 @@ The bot uses a two-layer structure.
 Classifying messages in the server into four categories: `grammatical` , `ungrammatical` , `harmful`, and `unsure`. 
 
 `grammatical`: Abbreviations, typos, and grammatical errors that does not impact comprehension are spared.  
-`ungrammatical`: The message does not reasonably make sense, such a series of completely random words.  
+`ungrammatical`: The message does not reasonably make sense, such as a series of completely random words.  
 `harmful`: The message contains obviously harmful information, for example, "vaccines are harmful".  
 `unsure`: The message cannot be confidently put into any of the above three categories.  
 
