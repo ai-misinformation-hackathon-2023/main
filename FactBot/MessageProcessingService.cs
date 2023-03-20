@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using Discord;
 using Discord.WebSocket;
 
@@ -48,7 +49,13 @@ public class MessageProcessingService
                     Console.WriteLine($"Response: {result}, {message}");
                     if (result is GPTResponse.Harmful or GPTResponse.ContainsMisinformation)
                     {
-                        await msg.ReplyAsync($"Misinformation detected!\nResponse from the bot: {message}");
+                        await msg.ReplyAsync($"Misinformation detected!\nResponse from the bot: {message}\n" +
+                                             "If you believe this is a mistake, please contact the bot owner.\n" +
+                                             "Message deleted :\n" +
+                                             $"From : {msg.Author.Username}#{msg.Author.Discriminator}\n" +
+                                             $"To : {msg.Channel.Name}\n" +
+                                             $"Sent : {msg.Timestamp.ToLocalTime():F}\n" +
+                                             $"Content :\n{msg.Content}");
                         await Task.Run(async () =>
                         {
                             await Task.Yield();
