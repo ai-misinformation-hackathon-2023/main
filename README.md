@@ -12,9 +12,14 @@ FactBot is a discord bot that detects messages that contain misinformation and d
 
 ## Installation
 
-1. The invitation link
+Method 1: Invite it to your own server
 
+1. The invitation link  
 2. Please follow usual guides on adding bots to discord servers, such as this [article](https://www.selecthub.com/resources/how-to-add-bots-to-discord/).
+
+Method 2: If you would like to see how the bot works before using it
+
+Join our demo [server](https://discord.gg/GnfWrMHy). 
 
 ## Usage
 
