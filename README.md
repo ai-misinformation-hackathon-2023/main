@@ -21,7 +21,7 @@ Invite the Bot to your own server and try it out!
 ### Method 2
 Join our demo to see how the Bot works before using it.
 
-Link to demo server: [server](https://discord.gg/GnfWrMHy). 
+Link to demo [server](https://discord.gg/GnfWrMHy). 
 
 ## Usage
 
