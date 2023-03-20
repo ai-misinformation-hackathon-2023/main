@@ -244,19 +244,25 @@ You then MUST give a reason for your response. The reason MUST be a single sente
 
 public class GPTMisinformationCheckService : IGPTService
 {
+    //Timeout,
+    // Unsure,
+    // ContainsMisinformation,
+    // DoesNotContainMisinformation,
+    // ContainsOpinion,
     private Conversation m_Chat;
     private OpenAIAPI m_OpenAI;
     private static GPTMisinformationCheckService? s_Instance;
     private List<ChatMessage> m_Messages = new List<ChatMessage>();
     private const string PROMPT = """
-You're tasked with finding misinformation in the user input. The first word of your response can either be YES, NO or MAYBE.
+You're tasked with finding misinformation in the user input. The first word of your response can either be ContainsMisinformation, DoesNotContainMisinformation, Unsure or ContainsOpinion.
 It is strictly forbidden for the first word of your response to be anything else.
 It is strictly forbidden to detect any correct mathematical formulas or equations as misinformation.
-It is strictly forbidden to detect any opinionated statements as misinformation.
+It is strictly forbidden to detect any opinionated statements as misinformation, they should be classified as ContainsOpimion.
 You then MUST give a reason for your response. The reason MUST be a single sentence.
 Here are some sample inputs and their expected outputs:
+
 """;
-    private const string SHORT_PROMPT = "YES for misinformation, NO for not misinformation, MAYBE for unsure.";
+    private const string SHORT_PROMPT = "ContainsMisinformation for misinformation, DoesNotContainMisinformation for not misinformation, Unsure for unsure, Opinion for contains opinion.";
     
     private string Preprocess(string message)
     {
@@ -274,7 +280,28 @@ Here are some sample inputs and their expected outputs:
         m_Messages = new List<ChatMessage>(
         new[]
         {
-            new ChatMessage(ChatMessageRole.System, PROMPT)
+            new ChatMessage(ChatMessageRole.System, PROMPT),
+            new ChatMessage(ChatMessageRole.User, Preprocess("Covid 19 is a hoax")),
+            new ChatMessage(ChatMessageRole.Assistant, "ContainsMisinformation"),
+            new ChatMessage(ChatMessageRole.User, Preprocess("The earth is flat")),
+            new ChatMessage(ChatMessageRole.Assistant, "ContainsMisinformation"),
+            new ChatMessage(ChatMessageRole.User, Preprocess("The moon landing was faked")),
+            new ChatMessage(ChatMessageRole.Assistant, "ContainsMisinformation"),
+            new ChatMessage(ChatMessageRole.User, Preprocess("The earth is round")),
+            new ChatMessage(ChatMessageRole.Assistant, "DoesNotContainMisinformation"),
+            new ChatMessage(ChatMessageRole.User, Preprocess("1 + 1 = 2")),
+            new ChatMessage(ChatMessageRole.Assistant, "DoesNotContainMisinformation"),
+            new ChatMessage(ChatMessageRole.User, Preprocess("1 + 1 = 3")),
+            new ChatMessage(ChatMessageRole.Assistant, "ContainsMisinformation"),
+            new ChatMessage(ChatMessageRole.User, Preprocess("red is a color")),
+            new ChatMessage(ChatMessageRole.Assistant, "DoesNotContainMisinformation"),
+            new ChatMessage(ChatMessageRole.User, Preprocess("red is the best color")),
+            new ChatMessage(ChatMessageRole.Assistant, "Opinion"),
+            new ChatMessage(ChatMessageRole.User, Preprocess("minecraft is my favorite game")),
+            new ChatMessage(ChatMessageRole.Assistant, "Opinion"),
+            new ChatMessage(ChatMessageRole.User, Preprocess("the colorless green idea sleeps furiously")),
+            new ChatMessage(ChatMessageRole.Assistant, "Opinion"),
+            
         }
         );
         BEGIN:
