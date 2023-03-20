@@ -49,7 +49,7 @@ public class GPTServiceManager : IGPTService
 
         try
         {
-            return await m_InputValidationService.GetResponse(message);
+            return await GetResponse(message);
         }
         finally
         {
