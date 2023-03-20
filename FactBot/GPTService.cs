@@ -10,7 +10,6 @@ public class GPTServiceManager : IGPTService
     private readonly GPTInputValidationService m_InputValidationService;
     private readonly GPTMisinformationCheckService m_MisinfoService;
     public static GPTServiceManager? s_Instance { get; private set; }
-    private object m_Mutex = new object();
     private volatile bool m_ResetInProgress = false;
     private object m_ResetInProgressMutex = new object();
     
@@ -86,44 +85,32 @@ public class GPTServiceManager : IGPTService
 
     public async Task Reset()
     {
-        try
+        Console.WriteLine("Reset in progress.");
+        lock (m_ResetInProgressMutex)
         {
-            Monitor.Enter(m_Mutex);
-            try
+            if (m_ResetInProgress)
             {
-                Monitor.Enter(m_ResetInProgressMutex);
-                if (m_ResetInProgress)
-                {
-                    return;
-                }
-                m_ResetInProgress = true;
+                return;
             }
-            finally
-            {
-                Monitor.Exit(m_ResetInProgress);
-            }
-            
-            while (true)
-            {
-                try
-                {
-                    Monitor.Enter(m_GetResponseCallCountMutex);
-                    if (m_GetResponseCallCount == 0)
-                        break;
-                }
-                finally
-                {
-                    Monitor.Exit(m_GetResponseCallCountMutex);
-                }
-                await Task.Yield();
-            }
-            await m_InputValidationService.Reset();
-            await m_MisinfoService.Reset();
+            m_ResetInProgress = true;
         }
-        finally
+
+        while (true)
         {
-            Monitor.Exit(m_Mutex);
+            lock (m_GetResponseCallCountMutex)
+            {
+                if (m_GetResponseCallCount == 0)
+                    break;
+            }
+            await Task.Yield();
         }
+        await m_InputValidationService.Reset();
+        await m_MisinfoService.Reset();
+        lock (m_ResetInProgressMutex)
+        {
+            m_ResetInProgress = false;
+        }
+        Console.WriteLine("Reset complete.");
     }
 }
 
