@@ -14,7 +14,7 @@ FactBot is a discord bot that detects messages that contain misinformation and d
 
 1. The invitation link
 
-2. 
+2. Please follow usual guides on adding bots to discord servers, such as this [article](https://www.selecthub.com/resources/how-to-add-bots-to-discord/).
 
 ## Usage
 
@@ -26,28 +26,20 @@ The bot uses a two-layer structure.
 
 The first layer classifies messages in the server into four categories, `grammatical` , `ungrammatical` , `harmful`, and `unsure`. 
 
-`grammatical`: Abbreviations, typos, and grammatical errors that does not impact comprehension are spared. 
-
-`ungrammatical`: the message does not reasonably make sense, such a series of completely random words. 
-
-`harmful`: the message contains obviously harmful information, for example, "vaccines are harmful". 
-
-`unsure`: the message cannot be confidently put into any of the above three categories. 
+`grammatical`: Abbreviations, typos, and grammatical errors that does not impact comprehension are spared.  
+`ungrammatical`: the message does not reasonably make sense, such a series of completely random words.  
+`harmful`: the message contains obviously harmful information, for example, "vaccines are harmful".  
+`unsure`: the message cannot be confidently put into any of the above three categories.  
 
 The second layer classifies messages in the server into four categories, `contains misinformation` , `does not contain misinformation` , `contains opinion`, and `unsure`.
 
-`contains misinformation`: the message contains misinformation. 
+`contains misinformation`: the message contains misinformation.  
+`does not contain misinformation`: the message does not contain misinformation.  
+`contains opinion`: the message is purely a matter of subjective opinion, and therefore it cannot be classified as factually correct or wrong.  
+`unsure`: the message cannot be confidently put into any of the above three categories.  
 
-`does not contain misinformation`: the message does not contain misinformation.
-
-`contains opinion`: the message is purely a matter of subjective opinion, and therefore it cannot be classified as factually correct or wrong. 
-
-`unsure`: the message cannot be confidently put into any of the above three categories.
-
-If a message is `harmful`, the bot would treat it as misinformation right away without going through the second layer. 
-
-If a message is `ungrammatical`, it would not go through the second layer either, as that will only be a waste of resources. 
-
+If a message is `harmful`, the bot would treat it as misinformation right away without going through the second layer.  
+If a message is `ungrammatical`, it would not go through the second layer either, as that will only be a waste of resources.  
 If a message is `grammatical` or `unsure`, it is passed to the second layer.
 
 Then, the bot deletes the messages that are classified as `harmful` or `contains misinformation`. 
