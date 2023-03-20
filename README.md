@@ -53,7 +53,7 @@ Then, the bot deletes the messages that are classified as `harmful` or `contains
 
 In our testing, the bot is effective in combating common forms of misinformation rampant on the internet, such as political slander, conspiracy theories, or misunderstanding of simple, popular scientific facts. 
 
-However, it should be noted that the bot may not perform correctly when it comes to mathematical calculations, strictly logical deduction/induction, or scientific knowledge not usually present in popular media (a weakness of all GPT services). For example, it may respond incorrectly to "1 + 1 = 3". 
+However, it should be noted that the bot may not perform correctly when it comes to mathematical calculations, strictly logical deduction/induction, or scientific knowledge not usually present in popular media (a weakness of all GPT services since no actual "calculations" are performed). For example, it may respond incorrectly to "1 + 1 = 3". 
 
 ## License
 
