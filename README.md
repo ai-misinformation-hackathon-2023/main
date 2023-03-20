@@ -44,7 +44,7 @@ Classifying messages in the server into four categories: `contains misinformatio
 
 `contains misinformation`: The message contains misinformation.  
 `does not contain misinformation`: The message does not contain misinformation.  
-`contains opinion`: The message is purely a matter of subjective opinion, and therefore it cannot be classified as factually correct or wrong.  
+`contains opinion`: The message is purely a matter of subjective opinion, and therefore cannot be classified as factually correct or wrong.  
 `unsure`: The message cannot be confidently put into any of the above three categories.  
 
 If a message is `harmful`, the bot would treat it as misinformation right away without going through the second layer.  
