@@ -8,13 +8,14 @@ public class MessageProcessingService
 {
     private readonly ConcurrentQueue<SocketUserMessage> m_MessageProcessingQueue;
     private Task m_Task;
+    private int m_QueryCount = 0;
 
     public MessageProcessingService()
     {
         m_MessageProcessingQueue = new ConcurrentQueue<SocketUserMessage>();
         m_Task = Task.Run(WorkerRoutine);
     }
-
+    
     public void AcceptMessage(SocketUserMessage message)
     {
         m_MessageProcessingQueue.Enqueue(message);
@@ -28,6 +29,18 @@ public class MessageProcessingService
             {
                 if (msg.Author.IsBot)
                     continue;
+                
+                m_QueryCount++;
+
+                if (m_QueryCount > 10)
+                {
+                    await Task.Run(async () =>
+                    {
+                        await GPTServiceManager.s_Instance!.Reset();
+                    });
+                    m_QueryCount = 0;
+                }
+                
                 Task t = Task.Run(async () =>
                 {
                     Console.WriteLine($"Processing message from {msg.Author.Username}#{msg.Author.Discriminator}: {msg.Content}");

@@ -171,30 +171,6 @@ You then MUST give a reason for your response. The reason MUST be a single sente
     public GPTInputValidationService(OpenAIAPI api)
     {
         m_OpenAI = api;
-        m_Messages = new List<ChatMessage>
-        {
-            new ChatMessage(ChatMessageRole.System, PROMPT),
-            new ChatMessage(ChatMessageRole.User, Preprocess("I am a windows computer")),
-            new ChatMessage(ChatMessageRole.Assistant, "YES. The sentence is grammatically correct."),
-            new ChatMessage(ChatMessageRole.User, Preprocess("They currently hold valid temporary status or have left Canada.")),
-            new ChatMessage(ChatMessageRole.Assistant, "YES. The sentence is grammatically correct."),
-            new ChatMessage(ChatMessageRole.User, Preprocess("Colorless green ideas sleep furiously.")),
-            new ChatMessage(ChatMessageRole.Assistant, "MAYBE. The sentence is grammatically correct but the meaning is unclear."),
-            new ChatMessage(ChatMessageRole.User, Preprocess("Hi")),
-            new ChatMessage(ChatMessageRole.Assistant, "YES. The sentence is grammatically correct."),
-            new ChatMessage(ChatMessageRole.User, Preprocess("asdogihawpeodfijasdkglas")),
-            new ChatMessage(ChatMessageRole.Assistant, "INVALID. It's a bunch of random letters."),
-            new ChatMessage(ChatMessageRole.User, Preprocess("Do yes hello hear yes me that i am is hey want go school home work")),
-            new ChatMessage(ChatMessageRole.Assistant, "INVALID. It's a bunch of random words."),
-            new ChatMessage(ChatMessageRole.User, Preprocess("1 + 1 = 3")),
-            new ChatMessage(ChatMessageRole.Assistant, "YES. The syntax is correct."),
-            new ChatMessage(ChatMessageRole.User, Preprocess("1 + 1 = 2")),
-            new ChatMessage(ChatMessageRole.Assistant, "YES. The syntax is correct."),
-            new ChatMessage(ChatMessageRole.User, Preprocess("The quick brown fox jumps over the lazy dog")),
-            new ChatMessage(ChatMessageRole.Assistant, "YES. The sentence is grammatically correct."),
-            new ChatMessage(ChatMessageRole.User, Preprocess("Pfizer manufactured the COVID virus.")),
-            new ChatMessage(ChatMessageRole.Assistant, "NO. The sentence is grammatically correct but it contains harmful information."),
-        };
     }
 
     public async Task<(GPTResponse, string)> GetResponse(string message)
@@ -249,18 +225,19 @@ You then MUST give a reason for your response. The reason MUST be a single sente
 
     public async Task Initialize()
     {
+        m_Messages = new List<ChatMessage>
+        {
+            new ChatMessage(ChatMessageRole.System, PROMPT)
+        };
         BEGIN:
         Task<ChatResult> resultTask = m_OpenAI.Chat.CreateChatCompletionAsync(new ChatRequest()
         {
             Model = Model.ChatGPTTurbo,
             Temperature = 0.5,
             MaxTokens = 2000,
-            Messages = new List<ChatMessage>
-            {
-                new ChatMessage(ChatMessageRole.System, PROMPT)
-            }
+            Messages = m_Messages
         });
-        if (await Task.WhenAny(resultTask, Task.Delay(TimeSpan.FromSeconds(60))) != resultTask)
+        if (await Task.WhenAny(resultTask, Task.Delay(TimeSpan.FromSeconds(20))) != resultTask)
         {
             Console.WriteLine("Timeout");
             goto BEGIN;
@@ -271,7 +248,7 @@ You then MUST give a reason for your response. The reason MUST be a single sente
 
     public async Task Reset()
     {
-        
+        await Initialize();
     }
 }
 
@@ -299,46 +276,27 @@ Here are some sample inputs and their expected outputs:
     public GPTMisinformationCheckService(OpenAIAPI api)
     {
         m_OpenAI = api;
-        m_Messages = new List<ChatMessage>(
-            new[]
-            {
-                new ChatMessage(ChatMessageRole.System, PROMPT),
-                new ChatMessage(ChatMessageRole.User, Preprocess("Covid 19 is a hoax")),
-                new ChatMessage(ChatMessageRole.Assistant, "NO"),
-                new ChatMessage(ChatMessageRole.User, Preprocess("The earth is flat")),
-                new ChatMessage(ChatMessageRole.Assistant, "NO"),
-                new ChatMessage(ChatMessageRole.User, Preprocess("The moon landing was faked")),
-                new ChatMessage(ChatMessageRole.Assistant, "NO"),
-                new ChatMessage(ChatMessageRole.User, Preprocess("The earth is round")),
-                new ChatMessage(ChatMessageRole.Assistant, "YES"),
-                new ChatMessage(ChatMessageRole.User, Preprocess("1 + 1 = 2")),
-                new ChatMessage(ChatMessageRole.Assistant, "YES"),
-                new ChatMessage(ChatMessageRole.User, Preprocess("1 + 1 = 3")),
-                new ChatMessage(ChatMessageRole.Assistant, "NO"),
-                new ChatMessage(ChatMessageRole.User, Preprocess("red is a color")),
-                new ChatMessage(ChatMessageRole.Assistant, "YES"),
-                new ChatMessage(ChatMessageRole.User, Preprocess("red is the best color")),
-                new ChatMessage(ChatMessageRole.Assistant, "MAYBE"),
-            }
-        );
         s_Instance = this;
     }
     
     public async Task Initialize()
     {
+        m_Messages = new List<ChatMessage>(
+        new[]
+        {
+            new ChatMessage(ChatMessageRole.System, PROMPT)
+        }
+        );
         BEGIN:
         Task<ChatResult> resultTask = m_OpenAI.Chat.CreateChatCompletionAsync(new ChatRequest()
         {
             Model = Model.ChatGPTTurbo,
             Temperature = 0.8,
             MaxTokens = 2000,
-            Messages = new List<ChatMessage>
-            {
-                new ChatMessage(ChatMessageRole.System, PROMPT)
-            }
+            Messages = m_Messages
         });
         
-        if (await Task.WhenAny(resultTask, Task.Delay(TimeSpan.FromSeconds(60))) != resultTask)
+        if (await Task.WhenAny(resultTask, Task.Delay(TimeSpan.FromSeconds(20))) != resultTask)
         {
             Console.WriteLine("Timeout");
             goto BEGIN;
@@ -349,7 +307,7 @@ Here are some sample inputs and their expected outputs:
 
     public async Task Reset()
     {
-        
+        await Initialize();
     }
 
     public static GPTMisinformationCheckService instance => s_Instance ?? throw new Exception("GPTService not initialized");
