@@ -116,11 +116,14 @@ public class GPTServiceManager : IGPTService
 
 public enum GPTResponse : int
 {
-    Passed,
-    Failed,
-    Maybe,
-    Invalid,
-    Timeout
+    Timeout,
+    Grammatical,
+    Ungrammatical,
+    Harmful,
+    Unsure,
+    ContainsMisinformation,
+    DoesNotContainMisinformation,
+    ContainsOpinion,
 }
 
 public interface IGPTService
