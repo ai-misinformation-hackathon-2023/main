@@ -14,7 +14,7 @@ FactBot is a discord bot that detects messages that contain misinformation and d
 
 Method 1: Invite it to your own server
 
-1. The invitation link  
+1. The invitation [link](https://discord.com/api/oauth2/authorize?client_id=1084285065493758123&permissions=8&scope=bot) of the bot is here. 
 2. Please follow usual guides on adding bots to discord servers, such as this [article](https://www.selecthub.com/resources/how-to-add-bots-to-discord/).
 
 Method 2: If you would like to see how the bot works before using it
@@ -51,7 +51,7 @@ Then, the bot deletes the messages that are classified as `harmful` or `contains
 
 ## Effectiveness
 
-In our testing, the bot is effective in combating common forms of misinformation rampant on the internect, such as political slander and conspiracy theories. 
+In our testing, the bot is effective in combating common forms of misinformation rampant on the internet, such as political slander, conspiracy theories, or misunderstanding of simple, popular scientific facts. 
 
 However, it should be noted that the bot may not perform correctly when it comes to mathematical calculations, strictly logical deduction/induction, or scientific knowledge not usually present in popular media (a weakness of all GPT services). For example, it may respond incorrectly to "1 + 1 = 3". 
 
