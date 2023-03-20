@@ -1,6 +1,6 @@
 # FactBot
 
-FactBot is a discord bot that detects messages that contain misinformation and delete them. 
+FactBot is a Discord Bot that detects messages that contain misinformation and delete them. 
 
 ## Table of Contents
 
@@ -12,18 +12,20 @@ FactBot is a discord bot that detects messages that contain misinformation and d
 
 ## Installation
 
-Method 1: Invite it to your own server
+### Method 1
+Invite the Bot to your own server and try it out!
 
 1. The invitation [link](https://discord.com/api/oauth2/authorize?client_id=1084285065493758123&permissions=8&scope=bot) of the bot is here. 
 2. Please follow usual guides on adding bots to discord servers, such as this [article](https://www.selecthub.com/resources/how-to-add-bots-to-discord/).
 
-Method 2: If you would like to see how the bot works before using it
+### Method 2
+Join our demo to see how the Bot works before using it.
 
-Join our demo [server](https://discord.gg/GnfWrMHy). 
+Link to demo server: [server](https://discord.gg/GnfWrMHy). 
 
 ## Usage
 
-The bot could assist admins to fight misinformation within their discord servers, as it is almost impossible to read all messages real-time in servers with a large active user base. 
+The bot could assist admins to fight misinformation within their Discord servers, as it is almost impossible to read all messages real-time in servers with a large active user base. 
 
 ## Functionalities
 
