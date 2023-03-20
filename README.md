@@ -31,7 +31,7 @@ The bot uses a two-layer structure.
 
 The first layer classifies messages in the server into four categories, `grammatical` , `ungrammatical` , `harmful`, and `unsure`. 
 
-`grammatical`: Abbreviations, typos, and grammatical errors that does not impact comprehension are spared.  
+`grammatical`: abbreviations, typos, and grammatical errors that does not impact comprehension are spared.  
 `ungrammatical`: the message does not reasonably make sense, such a series of completely random words.  
 `harmful`: the message contains obviously harmful information, for example, "vaccines are harmful".  
 `unsure`: the message cannot be confidently put into any of the above three categories.  
@@ -51,7 +51,9 @@ Then, the bot deletes the messages that are classified as `harmful` or `contains
 
 ## Effectiveness
 
-In our testing, the bot is effective in combating relatively straight-forward misinformation. 
+In our testing, the bot is effective in combating common forms of misinformation rampant on the internect, such as political slander and conspiracy theories. 
+
+However, it should be noted that the bot may not perform correctly when it comes to mathematical calculations, strictly logical deduction/induction, or scientific knowledge not usually present in popular media (a weakness of all GPT services). For example, it may respond incorrectly to "1 + 1 = 3". 
 
 ## License
 
