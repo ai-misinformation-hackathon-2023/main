@@ -1,6 +1,6 @@
 # FactBot
 
-FactBot is a Discord bot that detects messages that contain misinformation and deletes them. 
+FactBot is a Discord bot that detects messages that contain misinformation and deletes them. Misinformation is a serious problem on social media, especially in private communities such as small to medium-sized discord servers and private Facebook groups. The challenge that we plan to address is to extend fact checking to smaller and more private communities so that misinformation could have less of a chance to spread in “underground” areas.
 
 ## Table of Contents
 
@@ -58,7 +58,7 @@ The bot deletes the messages that are classified as `harmful` or `contains misin
 
 In our testings, the bot is effective in combating common forms of misinformation rampant on the internet, such as political slander, conspiracy theories, or misunderstanding of simple, popular scientific facts. 
 
-However, it should be noted that the bot may not perform correctly when it comes to mathematical calculations, strictly logical deduction/induction, or scientific knowledge not usually present in popular media (a weakness of all GPT services since no actual "calculations" are performed). For example, it may respond incorrectly to "1 + 1 = 3". 
+However, it should be noted that the bot may not perform correctly when it comes to mathematical calculations, strictly logical deduction/induction, or scientific knowledge not usually present in popular media (a weakness of all GPT services since no actual "calculations" are performed). For example, it may respond incorrectly to "1 + 1 = 3". It also has very limited knowledge of events that happened after 2021. 
 
 ## License
 
