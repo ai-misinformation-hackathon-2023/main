@@ -271,7 +271,6 @@ It is strictly forbidden to detect any correct mathematical formulas or equation
 It is strictly forbidden to detect any opinionated statements as misinformation, they should be classified as CONTAINSOPINION.
 You then MUST give a reason for your response. The reason MUST be a single sentence.
 Here are some sample inputs and their expected outputs:
-
 """;
     private const string SHORT_PROMPT = "CONTAINSMISINFORMATION for misinformation, DOESNOTCONTAINMISINFORMATION for not misinformation, CONTAINSOPINION for contains opinion, UNSURE for unsure.";
     
@@ -293,25 +292,25 @@ Here are some sample inputs and their expected outputs:
         {
             new ChatMessage(ChatMessageRole.System, PROMPT),
             new ChatMessage(ChatMessageRole.User, Preprocess("Covid 19 is a hoax")),
-            new ChatMessage(ChatMessageRole.Assistant, "CONTAINSMISINFORMATION"),
+            new ChatMessage(ChatMessageRole.Assistant, "CONTAINSMISINFORMATION. It is a misinformation sentence."),
             new ChatMessage(ChatMessageRole.User, Preprocess("The earth is flat")),
-            new ChatMessage(ChatMessageRole.Assistant, "CONTAINSMISINFORMATION"),
+            new ChatMessage(ChatMessageRole.Assistant, "CONTAINSMISINFORMATION. The earth is round."),
             new ChatMessage(ChatMessageRole.User, Preprocess("The moon landing was faked")),
-            new ChatMessage(ChatMessageRole.Assistant, "CONTAINSMISINFORMATION"),
+            new ChatMessage(ChatMessageRole.Assistant, "CONTAINSMISINFORMATION. The moon landing was real."),
             new ChatMessage(ChatMessageRole.User, Preprocess("The earth is round")),
-            new ChatMessage(ChatMessageRole.Assistant, "DOESNOTCONTAINMISINFORMATION"),
+            new ChatMessage(ChatMessageRole.Assistant, "DOESNOTCONTAINMISINFORMATION. The earth is indeed round."),
             new ChatMessage(ChatMessageRole.User, Preprocess("1 + 1 = 2")),
-            new ChatMessage(ChatMessageRole.Assistant, "DOESNOTCONTAINMISINFORMATION"),
+            new ChatMessage(ChatMessageRole.Assistant, "DOESNOTCONTAINMISINFORMATION. It is a correct mathematical formula."),
             new ChatMessage(ChatMessageRole.User, Preprocess("1 + 1 = 3")),
-            new ChatMessage(ChatMessageRole.Assistant, "CONTAINSMISINFORMATION"),
+            new ChatMessage(ChatMessageRole.Assistant, "CONTAINSMISINFORMATION. It is an incorrect mathematical formula."),
             new ChatMessage(ChatMessageRole.User, Preprocess("red is a color")),
-            new ChatMessage(ChatMessageRole.Assistant, "DOESNOTCONTAINMISINFORMATION"),
+            new ChatMessage(ChatMessageRole.Assistant, "DOESNOTCONTAINMISINFORMATION. It is a correct statement."),
             new ChatMessage(ChatMessageRole.User, Preprocess("red is the best color")),
-            new ChatMessage(ChatMessageRole.Assistant, "CONTAINSOPINION"),
+            new ChatMessage(ChatMessageRole.Assistant, "CONTAINSOPINION. It is an opinionated statement."),
             new ChatMessage(ChatMessageRole.User, Preprocess("minecraft is my favorite game")),
-            new ChatMessage(ChatMessageRole.Assistant, "CONTAINSOPINION"),
+            new ChatMessage(ChatMessageRole.Assistant, "CONTAINSOPINION. It is an opinionated statement."),
             new ChatMessage(ChatMessageRole.User, Preprocess("the colorless green idea sleeps furiously")),
-            new ChatMessage(ChatMessageRole.Assistant, "UNSURE"),
+            new ChatMessage(ChatMessageRole.Assistant, "UNSURE. The meaning that this sentence tries to convey is unclear."),
             
         }
         );
