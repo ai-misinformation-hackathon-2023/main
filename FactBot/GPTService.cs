@@ -171,7 +171,7 @@ You MUST then give a reason for your response. The reason MUST be a single sente
             messages = new List<ChatMessage>(m_Messages);
         }
         
-        messages.Add(new ChatMessage(ChatMessageRole.User, message));
+        messages.Add(new ChatMessage(ChatMessageRole.User, Preprocess(message)));
 
         Task<ChatResult> resultTask = m_OpenAI.Chat.CreateChatCompletionAsync(new ChatRequest()
         {
@@ -217,7 +217,23 @@ You MUST then give a reason for your response. The reason MUST be a single sente
     {
         m_Messages = new List<ChatMessage>
         {
-            new ChatMessage(ChatMessageRole.System, PROMPT)
+            new ChatMessage(ChatMessageRole.System, PROMPT),
+            new ChatMessage(ChatMessageRole.User, Preprocess("Hello world!")),
+            new ChatMessage(ChatMessageRole.Assistant, "GRAMMATICAL. It is a grammatical sentence."),
+            new ChatMessage(ChatMessageRole.User, Preprocess("hey yo how's it goin")),
+            new ChatMessage(ChatMessageRole.Assistant, "GRAMMATICAL. It is a grammatical and colloquial sentence."),
+            new ChatMessage(ChatMessageRole.User, Preprocess("I am a bot")),
+            new ChatMessage(ChatMessageRole.Assistant, "GRAMMATICAL. It is a grammatical sentence."),
+            new ChatMessage(ChatMessageRole.User, Preprocess("asdfasdfadsgfasdfasdfadsfasdfa")),
+            new ChatMessage(ChatMessageRole.Assistant, "UNGRAMMATICAL. It is a random string of characters."),
+            new ChatMessage(ChatMessageRole.User, Preprocess("Hey I you I go bot yes computer no eat god computer good")),
+            new ChatMessage(ChatMessageRole.Assistant, "UNGRAMMATICAL. It is not grammatical"),
+            new ChatMessage(ChatMessageRole.User, Preprocess("the earth is flat")),
+            new ChatMessage(ChatMessageRole.Assistant, "GRAMMATICAL. It is a grammatical sentence."),
+            new ChatMessage(ChatMessageRole.User, Preprocess("the earr is rond")),
+            new ChatMessage(ChatMessageRole.Assistant, "GRAMMATICAL. It has typos but should be grammatical."),
+            new ChatMessage(ChatMessageRole.User, Preprocess("vaccines cause autism")),
+            new ChatMessage(ChatMessageRole.Assistant, "HARMFUL. It is a harmful sentence."),
         };
         BEGIN:
         Task<ChatResult> resultTask = m_OpenAI.Chat.CreateChatCompletionAsync(new ChatRequest()
@@ -332,7 +348,7 @@ Here are some sample inputs and their expected outputs:
             messages = new List<ChatMessage>(m_Messages);
         }
         
-        messages.Add(new ChatMessage(ChatMessageRole.User, PROMPT + ":\n" + message));
+        messages.Add(new ChatMessage(ChatMessageRole.User, Preprocess(message)));
 
         Task<ChatResult> resultTask = m_OpenAI.Chat.CreateChatCompletionAsync(new ChatRequest()
         {
