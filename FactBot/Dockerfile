@@ -1,18 +1,19 @@
-﻿FROM mcr.microsoft.com/dotnet/runtime:7.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-WORKDIR /src
-COPY ["FactBot/FactBot.csproj", "FactBot/"]
-RUN dotnet restore "FactBot/FactBot.csproj"
-COPY . .
-WORKDIR "/src/FactBot"
-RUN dotnet build "FactBot.csproj" -c Release -o /app/build
+# Copy the csproj file and restore any dependencies
+COPY FactBot.csproj ./
+RUN dotnet restore
 
-FROM build AS publish
-RUN dotnet publish "FactBot.csproj" -c Release -o /app/publish /p:UseAppHost=false
+# Copy the rest of the application and build
+COPY . ./
+RUN dotnet publish -c Release -o out
 
-FROM base AS final
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build-env /app/out .
+
+# Run the bot
+COPY ["secrets.json", "/app"]
 ENTRYPOINT ["dotnet", "FactBot.dll"]
